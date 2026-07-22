@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Auto-Shorts Pro</title>
+    <style>
+        /* Premium CSS Reset */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; margin: 0; padding: 0; }
+        
+        /* Carbon Black Animated Background */
+        body {
+            background: linear-gradient(-45deg, #000000, #171717, #262626, #050505);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+        }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* Sleek Glassmorphism Card */
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.8);
+            text-align: center;
+        }
+
+        /* Metallic Text Gradient */
+        h2 { font-size: 32px; font-weight: 800; background: -webkit-linear-gradient(#ffffff, #999999); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        p.subtitle { color: #888888; font-size: 14px; margin-bottom: 30px; }
+
+        /* Minimal File Upload */
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+        }
+        .upload-area:hover { border-color: #ffffff; background: rgba(255, 255, 255, 0.05); transform: translateY(-3px); }
+        input[type="file"] { width: 100%; color: #cccccc; cursor: pointer; }
+
+        /* Graphite Professional Button */
+        button {
+            background: linear-gradient(90deg, #333333 0%, #000000 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); }
+        button:disabled { filter: grayscale(100%); cursor: not-allowed; opacity: 0.6; }
+
+        /* White Loading Spinner */
+        #loading { display: none; margin-top: 25px; font-weight: 600; color: #ffffff; }
+        .spinner { display: inline-block; width: 30px; height: 30px; border: 4px solid rgba(255, 255, 255, 0.1); border-radius: 50%; border-top-color: #ffffff; animation: spin 1s linear infinite; margin-bottom: 10px; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Results Grid */
+        #results { margin-top: 40px; display: none; text-align: left; }
+        .clip-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+        
+        /* Video Card */
+        .video-card { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 15px; padding: 15px; text-align: center; }
+        
+        /* Subtle Download Button */
+        .download-btn { display: inline-block; background: #ffffff; color: #000000; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; width: 100%; transition: 0.3s; }
+        .download-btn:hover { background: #e6e6e6; transform: scale(1.02); }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>AI Auto-Shorts Pro</h2>
+        <p class="subtitle">Lightning Fast Engine. 5 Highlights. Hard-Burned Subtitles.</p>
+        
+        <form id="uploadForm">
+            <div class="upload-area">
+                <input type="file" id="videoFile" accept="video/*" required>
+            </div>
+            <button type="submit" id="submitBtn">Extract Viral Clips (Under 1 Min)</button>
+        </form>
+
+        <div id="loading">
+            <div class="spinner"></div><br>
+            Extracting clips & Hard-burning Subtitles instantly...
+        </div>
+
+        <div id="results">
+            <h3 style="color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Your Viral Clips Ready</h3>
+            <div class="clip-grid" id="clipList"></div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('videoFile');
+            const submitBtn = document.getElementById('submitBtn');
+            const formData = new FormData();
+            formData.append('video', fileInput.files[0]);
+
+            submitBtn.disabled = true;
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+
+            try {
+                const response = await fetch('/process_video', { method: 'POST', body: formData });
+                const data = await response.json();
+                
+                submitBtn.disabled = false;
+                document.getElementById('loading').style.display = 'none';
+
+                if (data.status === "success") {
+                    document.getElementById('results').style.display = 'block';
+                    const clipList = document.getElementById('clipList');
+                    clipList.innerHTML = ""; 
+                    
+                    data.clips.forEach((clip) => {
+                        clipList.innerHTML += `
+                            <div class="video-card">
+                                <h4 style="margin-bottom: 10px; color: #fff;">${clip.title}</h4>
+                                <div class="video-container" style="border-radius: 10px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                    <video src="${clip.download_url}" controls style="width:100%; display:block;"></video>
+                                </div>
+                                <a href="${clip.download_url}" download="${clip.title}.mp4" class="download-btn" style="margin-top: 15px;">
+                                    Download Clip (With Subtitles)
+                                </a>
+                            </div>
+                        `;
+                    });
+                } else {
+                    alert("Analysis Failed: " + data.error);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Server error occurred!");
+                submitBtn.disabled = false;
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

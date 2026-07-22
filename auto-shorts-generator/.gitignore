@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+uploads/
+static/clips/
+.env
+.DS_Store
